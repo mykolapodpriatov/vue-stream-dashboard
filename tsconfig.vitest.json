@@ -3,9 +3,9 @@
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "test/**/*.ts"],
   "exclude": [],
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
-    // Tests run in Node with a DOM shim, so both sets of globals are real here
-    // — and only here.
-    "types": ["node"]
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo"
+    // No Node types on purpose: tests exercise browser code under a DOM shim,
+    // and `setTimeout` returning a number in one project and an object in
+    // another would force casts into the code under test.
   }
 }
