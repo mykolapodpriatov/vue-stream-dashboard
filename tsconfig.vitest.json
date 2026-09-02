@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "test/**/*.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
+    // Tests run in Node with a DOM shim, so both sets of globals are real here
+    // — and only here.
+    "types": ["node"]
+  }
+}

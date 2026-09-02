@@ -1,0 +1,76 @@
+/*
+ * Design tokens. Two themes, one set of names.
+ *
+ * Every colour a component uses is a semantic token — `--surface`, `--text-muted`,
+ * `--status-ok` — never a raw value. The light/dark switch is then one attribute
+ * on <html>, and contrast can be checked once per theme rather than once per
+ * component.
+ */
+:root {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 6px;
+  --focus-ring: 2px solid var(--accent);
+  --focus-offset: 2px;
+
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-raised: #eef0f3;
+  --border: #d5d9e0;
+  --text: #16191f;
+  --text-muted: #5b6270;
+  --accent: #1f5fbf;
+  --accent-contrast: #ffffff;
+
+  --status-ok: #1e7f4f;
+  --status-warn: #a35a00;
+  --status-bad: #b3261e;
+  --status-idle: #5b6270;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1216;
+  --surface: #171b21;
+  --surface-raised: #1f242c;
+  --border: #2d343e;
+  --text: #e7eaee;
+  --text-muted: #9aa3b0;
+  --accent: #7aa7ec;
+  --accent-contrast: #0f1216;
+
+  --status-ok: #58c48c;
+  --status-warn: #e0a24a;
+  --status-bad: #f2766d;
+  --status-idle: #9aa3b0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0f1216;
+    --surface: #171b21;
+    --surface-raised: #1f242c;
+    --border: #2d343e;
+    --text: #e7eaee;
+    --text-muted: #9aa3b0;
+    --accent: #7aa7ec;
+    --accent-contrast: #0f1216;
+
+    --status-ok: #58c48c;
+    --status-warn: #e0a24a;
+    --status-bad: #f2766d;
+    --status-idle: #9aa3b0;
+  }
+}

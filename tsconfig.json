@@ -1,0 +1,15 @@
+{
+  // Solution-style root: no files of its own, three projects underneath.
+  //
+  // App code, tooling configs and tests run in different environments and need
+  // different globals — `document` for the app, `process` for Vite's config,
+  // both for a component test. One tsconfig with every lib switched on hides
+  // exactly the mistakes this split is meant to catch, like `process.env` in a
+  // browser bundle.
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.vitest.json" }
+  ]
+}
