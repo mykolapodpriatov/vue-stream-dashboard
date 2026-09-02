@@ -42,6 +42,11 @@ export default withVueTs(
       'vue/define-macros-order': ['error', { order: ['defineProps', 'defineEmits'] }],
       'vue/no-unused-refs': 'error',
       'vue/prefer-true-attribute-shorthand': 'error',
+      // Under `exactOptionalPropertyTypes`, an optional prop with no default is
+      // the honest model of "the caller may not pass this": its type is
+      // `T | undefined` and `withDefaults` cannot set it to `undefined`. The
+      // rule predates that flag and would force a sentinel default instead.
+      'vue/require-default-prop': 'off',
     },
   },
 
