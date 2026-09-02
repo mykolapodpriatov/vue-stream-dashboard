@@ -32,7 +32,12 @@ export interface Normalizer {
   /** Validate one wire frame. `null` means rejected; the stats say why. */
   normalize(frame: unknown): TelemetryEvent | null;
   readonly stats: Readonly<NormalizerStats>;
-  /** Forget everything, for a new source. */
+  /**
+   * Forget the sequence history but keep the counters. For a new source:
+   * its numbering starts over, the session's tallies do not.
+   */
+  forgetSequence(): void;
+  /** Forget everything — history and counters. */
   reset(): void;
 }
 
@@ -107,11 +112,15 @@ export function createNormalizer(options: NormalizerOptions = {}): Normalizer {
     };
   }
 
-  function reset(): void {
+  function forgetSequence(): void {
     seen.fill(-1);
     highest = -1;
+  }
+
+  function reset(): void {
+    forgetSequence();
     Object.assign(stats, emptyStats());
   }
 
-  return { normalize, stats, reset };
+  return { normalize, stats, forgetSequence, reset };
 }

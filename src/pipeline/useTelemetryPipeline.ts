@@ -123,6 +123,10 @@ export function useTelemetryPipeline(
   async function run(source: StreamSource<WireFrame>): Promise<void> {
     stop();
     current = source;
+    // Sequence numbers belong to a source. Carrying the previous source's
+    // history across would reject every frame of a replay that starts at
+    // seq 0 as "stale" — found by the end-to-end suite, not by reasoning.
+    normalizer.forgetSequence();
     try {
       for await (const batch of source.connect()) {
         // A newer `run()` has taken over; this loop is stale and must not

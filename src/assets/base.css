@@ -37,6 +37,31 @@ select {
 }
 
 /*
+ * Form controls get explicit colours. Left to the user agent, a <select> on
+ * Linux Chromium keeps a light default background even under
+ * `color-scheme: dark`, and inherits our light text onto it — a contrast
+ * failure axe found on CI that no macOS browser showed.
+ */
+input:not([type='radio']):not([type='checkbox']),
+select {
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+input[type='radio'],
+input[type='checkbox'] {
+  accent-color: var(--accent);
+}
+
+option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/*
  * One focus style for everything. `:focus-visible` so mouse users are not
  * shouted at, but a keyboard user always sees where they are — including on
  * table rows and custom controls, which browsers style inconsistently.

@@ -29,7 +29,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
+    "test:e2e": "playwright test",
+    "bench": "playwright test --config playwright.bench.config.ts"
   },
   "dependencies": {
     "pinia": "^4.0.3",
@@ -38,7 +40,9 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.10.0",
     "@vitejs/plugin-vue": "^6.0.8",
