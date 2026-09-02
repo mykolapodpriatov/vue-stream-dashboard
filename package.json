@@ -31,7 +31,8 @@
     "test:coverage": "vitest run --coverage",
     "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
     "test:e2e": "playwright test",
-    "bench": "playwright test --config playwright.bench.config.ts"
+    "bench": "playwright test --config playwright.bench.config.ts",
+    "media": "tsx scripts/capture-media.ts"
   },
   "dependencies": {
     "pinia": "^4.0.3",
@@ -56,6 +57,7 @@
     "eslint-plugin-vuejs-accessibility": "^2.6.0",
     "happy-dom": "^20.13.2",
     "prettier": "^3.9.6",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11",
