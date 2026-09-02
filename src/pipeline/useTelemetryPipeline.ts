@@ -45,20 +45,20 @@ export interface TelemetryPipeline {
   stats: ShallowRef<PipelineStats>;
   paused: Readonly<Ref<boolean>>;
   /** Push raw frames in. Validation, buffering and scheduling happen here. */
-  ingest(frames: readonly unknown[]): void;
+  ingest: (frames: readonly unknown[]) => void;
   /**
    * Drain a source into the pipeline until it completes or is replaced.
    * Resolves when the source's iteration ends.
    */
-  run(source: StreamSource<WireFrame>): Promise<void>;
+  run: (source: StreamSource<WireFrame>) => Promise<void>;
   /** Close the current source. The pipeline keeps its state. */
-  stop(): void;
-  pause(): void;
-  resume(): void;
+  stop: () => void;
+  pause: () => void;
+  resume: () => void;
   /** Commit what is pending now, outside the frame cadence. */
-  flush(): void;
+  flush: () => void;
   /** Replace the fleet and forget every reading. */
-  reset(instruments: number): void;
+  reset: (instruments: number) => void;
 }
 
 /**
