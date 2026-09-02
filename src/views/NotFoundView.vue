@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
+
+const { t } = useI18n();
 </script>
 
 <template>
   <section>
-    <h1>Page not found</h1>
+    <h1>{{ t('notFound.title') }}</h1>
     <p>
-      Nothing lives at this address.
-      <RouterLink to="/">Back to the live feed</RouterLink>
+      {{ t('notFound.body') }}
+      <RouterLink to="/">{{ t('instrument.back') }}</RouterLink>
     </p>
   </section>
 </template>

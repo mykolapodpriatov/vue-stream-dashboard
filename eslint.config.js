@@ -47,6 +47,13 @@ export default withVueTs(
       // `T | undefined` and `withDefaults` cannot set it to `undefined`. The
       // rule predates that flag and would force a sentinel default instead.
       'vue/require-default-prop': 'off',
+      // The plugin's default demands a `for`/`id` pair *and* nesting. Either
+      // one associates a label with its control; requiring both only produces
+      // ids nothing else references.
+      'vuejs-accessibility/label-has-for': [
+        'error',
+        { required: { some: ['nesting', 'id'] } },
+      ],
     },
   },
 

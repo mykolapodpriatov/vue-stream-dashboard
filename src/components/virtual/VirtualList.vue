@@ -33,7 +33,7 @@ const props = withDefaults(
      * Pin the container height instead of measuring it. For tests and for
      * layouts that already know the number.
      */
-    viewportHeight?: number;
+    viewportHeight?: number | undefined;
     /** Stable DOM id for a row, so `aria-activedescendant` can point at it. */
     rowId?: (index: number) => string;
   }>(),

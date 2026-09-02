@@ -1,28 +1,58 @@
 <script setup lang="ts">
+import { onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterLink, RouterView } from 'vue-router';
+import ConnectionStatus from '@/components/feed/ConnectionStatus.vue';
+import { useAppearance } from '@/composables/useAppearance';
+import { useAnnouncerStore } from '@/stores/announcer';
+import { useFeedStore } from '@/stores/feed';
+
+const { t } = useI18n();
+const feed = useFeedStore();
+const announcer = useAnnouncerStore();
+useAppearance();
 
 const nav = [
-  { to: '/', label: 'Live feed' },
-  { to: '/connection', label: 'Connection' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/', key: 'live' },
+  { to: '/connection', key: 'connection' },
+  { to: '/settings', key: 'settings' },
 ] as const;
+
+// The feed belongs to the shell, not to a page: navigating away from the
+// table must not stop the data, or the instrument page would open onto a
+// frozen fleet.
+onMounted(() => {
+  if (!feed.started) feed.start();
+});
+
+watch(
+  () => feed.status,
+  (status) =>
+    void announcer.announce(t('status.announce', { status: t(`status.${status}`) })),
+);
 </script>
 
 <template>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">{{ t('app.skip') }}</a>
   <header class="app-header">
-    <p class="app-title">Stream Dashboard</p>
-    <nav aria-label="Primary">
+    <p class="app-title">{{ t('app.title') }}</p>
+    <nav :aria-label="t('app.navLabel')">
       <ul class="app-nav">
         <li v-for="item in nav" :key="item.to">
-          <RouterLink :to="item.to">{{ item.label }}</RouterLink>
+          <RouterLink :to="item.to">{{ t(`app.nav.${item.key}`) }}</RouterLink>
         </li>
       </ul>
     </nav>
+    <RouterLink to="/connection" class="app-status">
+      <ConnectionStatus :status="feed.status" compact />
+    </RouterLink>
   </header>
   <main id="main" class="app-main" tabindex="-1">
     <RouterView />
   </main>
+  <div class="visually-hidden" role="status" aria-live="polite">
+    {{ announcer.message }}
+  </div>
 </template>
 
 <style scoped>
@@ -59,6 +89,11 @@ const nav = [
 .app-nav a[aria-current='page'] {
   color: var(--text);
   border-bottom: 2px solid var(--accent);
+}
+
+.app-status {
+  margin-left: auto;
+  text-decoration: none;
 }
 
 .app-main {
