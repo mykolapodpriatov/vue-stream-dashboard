@@ -41,7 +41,13 @@ const items = computed(() => [
 </script>
 
 <template>
-  <dl class="stats" :title="t('stats.help')">
+  <dl
+    class="stats"
+    :title="t('stats.help')"
+    :data-events="stats.flushed"
+    :data-commits="stats.commits"
+    :data-dropped="stats.dropped"
+  >
     <div v-for="item in items" :key="item.key" class="stats__item" :data-stat="item.key">
       <dt>{{ t(`stats.${item.key}`) }}</dt>
       <dd>{{ item.value }}</dd>

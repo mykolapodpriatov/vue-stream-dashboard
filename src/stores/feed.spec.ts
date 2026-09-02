@@ -68,6 +68,22 @@ describe('useFeedStore', () => {
     expect(feed.stats.accepted).toBeGreaterThan(0);
   });
 
+  it('replaying after a live session accepts the recording from seq 0', async () => {
+    const feed = useFeedStore();
+    feed.start();
+    h.workers[0]!.emitBatch([frame(90_000, 1, 1), frame(90_001, 2, 2)]);
+    await flushPromises();
+    h.scheduler.tick();
+    expect(feed.stats.accepted).toBe(2);
+
+    feed.setMode('step');
+    feed.step();
+    await flushPromises();
+    h.scheduler.tick();
+    expect(feed.stats.stale).toBe(0);
+    expect(feed.stats.accepted).toBeGreaterThan(2);
+  });
+
   it('a drop fault takes the feed offline; start() brings it back', async () => {
     const feed = useFeedStore();
     feed.start();

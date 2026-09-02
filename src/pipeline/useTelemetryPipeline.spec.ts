@@ -100,6 +100,19 @@ describe('useTelemetryPipeline', () => {
     expect(pipeline.snapshot.value.rows[1]!.value).toBe(2);
   });
 
+  it('a new source starts a new sequence space', async () => {
+    const { scheduler, pipeline } = setup();
+    await pipeline.run(arraySource([[frame(50_000, 0, 1)]]));
+    scheduler.tick();
+    // A replay that starts at seq 0 after a live session at seq 50 000 must
+    // not be dropped as stale.
+    await pipeline.run(arraySource([[frame(0, 1, 2), frame(1, 2, 3)]]));
+    scheduler.tick();
+    expect(pipeline.stats.value.stale).toBe(0);
+    expect(pipeline.stats.value.accepted).toBe(3);
+    expect(pipeline.snapshot.value.rows[1]!.value).toBe(2);
+  });
+
   it('stop closes the source and ends the run', async () => {
     const { pipeline } = setup();
     const source = arraySource([], { hang: true });

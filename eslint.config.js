@@ -58,6 +58,15 @@ export default withVueTs(
   },
 
   {
+    files: ['e2e/**/*.ts', 'bench/**/*.ts'],
+    rules: {
+      // `page.evaluate` results are typed by what the callback returns, but
+      // the DOM reads inside it are untyped by nature.
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+
+  {
     files: ['src/**/*.spec.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',

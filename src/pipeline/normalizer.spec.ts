@@ -91,6 +91,15 @@ describe('createNormalizer', () => {
     expect(normalizer.stats.duplicate).toBe(1);
   });
 
+  it('forgetSequence keeps the counters but accepts old seqs again', () => {
+    const normalizer = createNormalizer();
+    normalizer.normalize(frame(5));
+    normalizer.normalize(frame(5));
+    normalizer.forgetSequence();
+    expect(normalizer.normalize(frame(5))).not.toBeNull();
+    expect(normalizer.stats).toMatchObject({ accepted: 2, duplicate: 1 });
+  });
+
   it('reset forgets sequence history', () => {
     const normalizer = createNormalizer();
     normalizer.normalize(frame(5));
