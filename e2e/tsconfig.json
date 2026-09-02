@@ -6,6 +6,7 @@
   "include": [
     "./**/*.ts",
     "../bench/**/*.ts",
+    "../scripts/**/*.ts",
     "../playwright.config.ts",
     "../playwright.bench.config.ts"
   ],

@@ -58,7 +58,7 @@ export default withVueTs(
   },
 
   {
-    files: ['e2e/**/*.ts', 'bench/**/*.ts'],
+    files: ['e2e/**/*.ts', 'bench/**/*.ts', 'scripts/**/*.ts'],
     rules: {
       // `page.evaluate` results are typed by what the callback returns, but
       // the DOM reads inside it are untyped by nature.
