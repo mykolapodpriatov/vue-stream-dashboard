@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { counters, dataRows, gotoLive } from './helpers';
+import { counters, dataRows, gotoLive, readStat } from './helpers';
 
 /**
  * Structural performance invariants.
@@ -23,9 +23,7 @@ test.describe('structural invariants', () => {
       await page.waitForTimeout(200);
       expect(await dataRows(page).count()).toBeLessThanOrEqual(80);
     }
-    await expect(
-      page.locator('[data-stat="total"], [data-stat="rendered"] dd'),
-    ).toContainText(/10[,\s]000/);
+    await expect(page.locator('[data-stat="rendered"] dd')).toContainText(/10[,\s]000/);
   });
 
   test('commits never outnumber animation frames', async ({ page }) => {
@@ -72,18 +70,18 @@ test.describe('structural invariants', () => {
 
   test('a burst is absorbed by the buffer, not by the DOM', async ({ page }) => {
     await gotoLive(page);
-    // Pause to build a backlog, then resume: everything arrives in one commit.
+    // Pause to build a backlog, then resume. The backlog must land as one
+    // large batch — the buffer absorbing it — while the DOM stays the same
+    // size. Asserted through the largest-batch counter rather than a commit
+    // delta between two reads: the feed keeps committing every frame after
+    // the resume, and a slow runner widens the gap between reads.
     await page.getByRole('button', { name: 'Pause' }).click();
     await page.waitForTimeout(1_000);
     const before = await counters(page);
     await page.getByRole('button', { name: 'Resume' }).click();
-    await expect
-      .poll(async () => (await counters(page)).commits)
-      .toBeGreaterThan(before.commits);
+    await expect.poll(() => readStat(page, 'maxBatch')).toBeGreaterThan(2_000);
     const after = await counters(page);
-    // Thousands of events, a couple of commits.
     expect(after.events - before.events).toBeGreaterThan(2_000);
-    expect(after.commits - before.commits).toBeLessThanOrEqual(3);
     expect(await dataRows(page).count()).toBeLessThanOrEqual(80);
   });
 });

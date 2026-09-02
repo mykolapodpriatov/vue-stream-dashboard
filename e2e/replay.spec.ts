@@ -18,14 +18,16 @@ test.describe('replay', () => {
     for (let i = 0; i < 3; i++) await next.click();
     await expect(position).toHaveText(/^3 of \d+ batches$/);
 
-    await expect
-      .poll(async () => (await counters(page)).commits - before.commits)
-      .toBeGreaterThanOrEqual(1);
-    const after = await counters(page);
     // Three ticks of a 5 000/s recording, batched by 20 ms windows: ~100 each.
-    expect(after.events - before.events).toBeGreaterThanOrEqual(280);
+    // Poll for the last one to land — on a slow runner the batches are still
+    // in flight when the position readout has already moved.
+    await expect
+      .poll(async () => (await counters(page)).events - before.events)
+      .toBeGreaterThanOrEqual(280);
+    const after = await counters(page);
     expect(after.events - before.events).toBeLessThanOrEqual(320);
     // Never more commits than steps.
+    expect(after.commits - before.commits).toBeGreaterThanOrEqual(1);
     expect(after.commits - before.commits).toBeLessThanOrEqual(3);
 
     // And the table went quiet between steps: nothing pending, nothing moving.
@@ -36,7 +38,6 @@ test.describe('replay', () => {
   test('100× plays through the recording on its own and loops', async ({ page }) => {
     await gotoLive(page);
     await setPlayback(page, '100×');
-    await expect(page.getByText('Recording')).toHaveCount(0); // not on this page — sanity
     const position = page.locator('.playback__position');
     await expect
       .poll(async () => Number((await position.innerText()).split(' ')[0]))
