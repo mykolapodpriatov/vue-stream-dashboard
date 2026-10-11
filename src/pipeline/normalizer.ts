@@ -59,6 +59,9 @@ export function createNormalizer(options: NormalizerOptions = {}): Normalizer {
   const { window = 4096 } = options;
   const seen = new Float64Array(window).fill(-1);
   let highest = -1;
+  // First sequence this source actually accepted. A frame from before that
+  // point never opened a gap, so it must not close one.
+  let origin = -1;
   const stats = emptyStats();
 
   function normalize(frame: unknown): TelemetryEvent | null {
@@ -87,6 +90,7 @@ export function createNormalizer(options: NormalizerOptions = {}): Normalizer {
 
     const sequence = seq as number;
     if (sequence > highest) {
+      if (highest < 0) origin = sequence;
       if (highest >= 0 && sequence > highest + 1) stats.gaps += sequence - highest - 1;
       highest = sequence;
     } else if (sequence <= highest - window) {
@@ -96,9 +100,11 @@ export function createNormalizer(options: NormalizerOptions = {}): Normalizer {
       stats.duplicate += 1;
       return null;
     } else {
-      // Late but new: it fills a gap we counted earlier.
+      // Late but new. Close a gap only when this sequence sits inside the
+      // span already opened. Anything older than the first accepted frame
+      // was never missing.
       stats.reordered += 1;
-      if (stats.gaps > 0) stats.gaps -= 1;
+      if (sequence > origin && stats.gaps > 0) stats.gaps -= 1;
     }
     seen[sequence % window] = sequence;
     stats.accepted += 1;
@@ -115,6 +121,7 @@ export function createNormalizer(options: NormalizerOptions = {}): Normalizer {
   function forgetSequence(): void {
     seen.fill(-1);
     highest = -1;
+    origin = -1;
   }
 
   function reset(): void {

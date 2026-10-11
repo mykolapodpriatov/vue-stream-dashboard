@@ -71,6 +71,17 @@ describe('createNormalizer', () => {
     expect(normalizer.stats.gaps).toBe(0);
   });
 
+  it('does not close a gap with a frame from before the first one', () => {
+    const normalizer = createNormalizer();
+    normalizer.normalize(frame(10));
+    normalizer.normalize(frame(12));
+    expect(normalizer.stats.gaps).toBe(1);
+    expect(normalizer.normalize(frame(8))).not.toBeNull();
+    expect(normalizer.stats).toMatchObject({ accepted: 3, reordered: 1, gaps: 1 });
+    expect(normalizer.normalize(frame(11))).not.toBeNull();
+    expect(normalizer.stats.gaps).toBe(0);
+  });
+
   it('drops frames older than the window as stale rather than trusting them', () => {
     const normalizer = createNormalizer({ window: 8 });
     normalizer.normalize(frame(100));
