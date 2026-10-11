@@ -164,16 +164,16 @@ export function createReplaySource(
   function setSpeed(next: ReplaySpeed): void {
     if (next === speed) return;
     speed = next;
-    // A change mid-wait applies immediately: leaving `step` should start
-    // playing, and entering it should stop the clock. Re-arming with the full
-    // gap is a small inaccuracy nobody can perceive.
-    if (release) {
-      if (timer !== null) {
-        timers.clearTimeout(timer);
-        timer = null;
-      }
-      timer = timers.setTimeout(wake, 0);
+    // A change mid-wait applies immediately. Leaving step, or switching
+    // between timed speeds, resumes on the next tick. Entering step stops
+    // the clock: the parked batch waits for step() instead of flushing.
+    if (!release) return;
+    if (timer !== null) {
+      timers.clearTimeout(timer);
+      timer = null;
     }
+    if (next === 'step') return;
+    timer = timers.setTimeout(wake, 0);
   }
 
   return {

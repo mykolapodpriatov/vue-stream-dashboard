@@ -179,6 +179,28 @@ describe('createReplaySource', () => {
     source.close();
   });
 
+  it('entering step mode mid-wait does not flush the parked batch', async () => {
+    const clock = fakeTimers();
+    const source = createReplaySource(recording, { speed: 1, timers: clock.timers });
+    const iterator = source.connect()[Symbol.asyncIterator]();
+    const first = iterator.next();
+    await clock.advance(0);
+    await first;
+
+    const pending = iterator.next();
+    await Promise.resolve();
+    expect(clock.scheduled).toEqual([100]);
+    source.setSpeed('step');
+    expect(clock.scheduled).toEqual([]);
+    await clock.advance(10_000);
+    expect(source.position).toBe(1);
+
+    source.step();
+    await clock.advance(0);
+    expect((await pending).done).toBe(false);
+    expect(source.position).toBe(2);
+  });
+
   it('switching out of step mode mid-wait resumes playback', async () => {
     const clock = fakeTimers();
     const source = createReplaySource(recording, { speed: 'step', timers: clock.timers });
